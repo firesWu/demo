@@ -3,4 +3,4 @@ project(externtest)
 
 set(CMAKE_CXX_STANDARD 14)
 
-add_executable(externtest main.cpp head.cpp head.hpp)
+add_executable(externtest main.cpp head.cpp head.hpp enum.h)
