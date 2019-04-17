@@ -2,6 +2,7 @@
 #include <vector>
 #include <ctime>
 #include <type_traits>
+#include <bitset>
 
 using namespace std;
 
@@ -13,8 +14,13 @@ class demo {
             cout<<" call constructor " <<endl;
         }
 
-        demo( const demo& b ):value(b.value){
+
+        demo( demo& b ):value(b.value){
             cout<<" call copy constructed"<<endl;
+        }
+
+        demo( const demo& b ):value(b.value){
+            cout<<" call copy const constructed"<<endl;
         }
 
         demo( demo&& b ){
@@ -158,11 +164,116 @@ void test4(){
     cout<<b3.value<<endl;
 }
 
+
+// test section3 bitset
+void test5(){
+
+    // 内部存储使用 size_t 类型
+    bitset<100> bs(4);
+    bitset<300> bs2("100");
+    cout<< bs <<endl;
+    cout<< bs2.size() <<endl;
+
+    cout<< numeric_limits<size_t>::max()<<endl;
+    cout<< numeric_limits<unsigned long>::max()<<endl;
+    cout<< numeric_limits<unsigned long long>::max()<<endl;
+
+    cout<< sizeof(size_t) <<endl;
+    cout<< sizeof(unsigned long)<<endl;
+    cout<< sizeof(unsigned long long) <<endl;
+
+    int i =1;
+    i = (i = 3*i, i*5);
+    cout<<i<<endl;
+
+}
+
+// test section5 cast
+
+class base {
+public:
+    virtual void test(){
+        cout<< "i'm father" <<endl;
+    }
+};
+
+class son : public base {
+public:
+//    virtual void test(){
+//        cout<< " i'm son"<<endl;
+//    }
+
+    void test2(){
+        cout<< "hi" <<endl;
+    }
+};
+
+void test6(){
+
+    // dynamic_cast
+    cout<<"dynamic_cast"<<endl;
+    {
+        cout<<"上行转换"<<endl;
+        son * s = new son();
+        s->test();
+        s->test2();
+
+        auto b = dynamic_cast<base*>(s);
+        b->test();
+        auto b2 = s;
+        b2->test();
+    }
+    {
+        cout<<"下行转换"<<endl;
+        base * b = new son();
+        b->test();
+
+        auto s = dynamic_cast<son*>(b);
+        s->test();
+        s->test2();
+    }
+    cout<<"reinterpret_cast"<<endl;
+    {
+        int * ptr = new int(97);
+        char * cptr = reinterpret_cast<char*>(ptr);
+        cout<<*cptr<<endl;
+    }
+
+}
+
+
+//demo& getTemp(){
+//    demo temp("10aa");
+//    return temp;
+//}
+
+shared_ptr<demo> getTempPtr(){
+    shared_ptr<demo> s_ptr = make_shared<demo>("100aa");
+    return s_ptr;
+}
+
+void test7(){
+
+//    {
+//        auto& i = getTemp();
+//        cout<<i.value<<endl;
+//    }
+
+    {
+        auto ptr = getTempPtr();
+        cout<<ptr->value<<endl;
+    }
+
+}
+
 int main() {
 
 //    test1();
 //    test2();
 //    test3();
-    test4();
+//    test4();
+//    test5();
+//    test6();
+    test7();
     return 0;
 }
