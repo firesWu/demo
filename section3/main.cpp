@@ -3,38 +3,12 @@
 #include <ctime>
 #include <type_traits>
 #include <bitset>
+#include "demo.h"
+#include "HashPtrMem.h"
+#include "smartptr.h"
+#include "son.h"
 
 using namespace std;
-
-class demo {
-    public:
-        string value;
-        demo():value(""){}
-        demo( string b ):value(b){
-            cout<<" call constructor " <<endl;
-        }
-
-
-        demo( demo& b ):value(b.value){
-            cout<<" call copy constructed"<<endl;
-        }
-
-        demo( const demo& b ):value(b.value){
-            cout<<" call copy const constructed"<<endl;
-        }
-
-        demo( demo&& b ){
-            value = move(b.value);
-            cout<<" call move constructed"<<endl;
-        }
-
-        ~demo(){
-            cout<<" destroy demo"<<endl;
-        }
-
-
-};
-
 
 void test1(){
     cout<< "===== test 01 =====" <<endl;
@@ -88,24 +62,6 @@ void test2(){
 
     return ;
 }
-
-class HasPtrMem {
-public:
-    HasPtrMem():d(new int(0)){
-        cout<<"construct"<<endl;
-    }
-
-    // 增加深拷贝函数， 避免 d 指针成为悬挂指针
-    HasPtrMem(HasPtrMem& a):d(new int(*a.d)){
-        cout<<"construct"<<endl;
-    }
-
-    ~HasPtrMem(){
-        delete d;
-        cout<<"destrcut"<<endl;
-    }
-    int * d;
-};
 
 // 浅拷贝 深拷贝分析。
 void test3(){
@@ -189,25 +145,6 @@ void test5(){
 }
 
 // test section5 cast
-
-class base {
-public:
-    virtual void test(){
-        cout<< "i'm father" <<endl;
-    }
-};
-
-class son : public base {
-public:
-//    virtual void test(){
-//        cout<< " i'm son"<<endl;
-//    }
-
-    void test2(){
-        cout<< "hi" <<endl;
-    }
-};
-
 void test6(){
     cout<< "===== test 06 =====" <<endl;
     // dynamic_cast
@@ -225,12 +162,13 @@ void test6(){
     }
     {
         cout<<"下行转换"<<endl;
-        base * b = new son();
+        base * b = new base();
         b->test();
 
         auto s = dynamic_cast<son*>(b);
-        s->test();
-        s->test2();
+        if(s== nullptr) cout<<"s is null"<<endl;
+//        s->test();
+//        s->test2();
     }
     cout<<"reinterpret_cast"<<endl;
     {
@@ -268,59 +206,6 @@ void test7(){
 
 // 智能指针测试
 
-class B;
-class A {
-public:
-    B* b;
-    shared_ptr<B> b2;
-    weak_ptr<B> b3;
-
-    A(){}
-    A(B* _b):b(_b){}
-
-    void setB(B* _b){
-        b = _b;
-    }
-
-    void setB2(shared_ptr<B>& _b){
-        b2 = _b;
-    }
-
-    void setB3(const weak_ptr<B>& _b){
-        b3 = _b;
-    }
-
-    ~A(){
-        cout<<"A destory"<<endl;
-    }
-};
-
-class B {
-public:
-    A* a;
-    shared_ptr<A> a2;
-    weak_ptr<A> a3;
-
-    B(){}
-    B(A* _a):a(_a){}
-
-    void setA(A* _a){
-        a = _a;
-    }
-
-    void setA2(shared_ptr<A>& _a){
-        a2 = _a;
-    }
-
-    void setA3(const weak_ptr<A>& _a){
-        a3 = _a;
-    }
-
-    ~B(){
-        cout<<"B destory"<<endl;
-    }
-};
-
 void test8(){
     cout<< "===== test 08 =====" <<endl;
     // 直接销毁，不会管对象之间是否还有引用
@@ -356,6 +241,75 @@ void test8(){
 
 }
 
+// 函数前后加 const
+
+const int returnInt(){
+    int i = 0;
+    return i;
+}
+
+class consttest{
+
+    int i = 0;
+
+    void changeI(){
+        i = 10;
+    }
+
+    void changeI2() const{
+        // 修改 i 会编译报错， const 修饰的函数不允许修改数据成员。
+    }
+
+};
+
+void test9(){
+    cout<< "===== test 09 =====" <<endl;
+    const auto& num = returnInt();
+}
+
+// 函数重载
+// 测试父子类能否同时为形参
+// 可以同时为参， 子类可以匹配 2 种，优先匹配子类原有类型。 父类只能匹配父类为形参的函数
+void overload( base b ){
+    cout<<"base"<<endl;
+}
+
+void overload( son s ){
+    cout<<"son"<<endl;
+}
+
+void getBaseRefer(base& b){
+    b.test();
+    b.test3();
+    cout<<b.i<<endl;
+}
+
+void getBaseRefer2(base b){
+    b.test();
+    b.test3();
+    cout<<b.i<<endl;
+}
+
+void test10(){
+    cout<< "===== test 09 =====" <<endl;
+    son s;
+    s.setI();
+    overload(s);
+
+    getBaseRefer(s);
+    getBaseRefer2(s);
+}
+
+void test11(){
+    vector<int> list;
+
+    for(int i=0;i<100;i++) list.emplace_back(i);
+
+    vector<int>::iterator itr = list.begin() + 10;
+    itr += 30;
+    cout<<*itr<<endl;
+}
+
 int main() {
 
 //    test1();
@@ -365,6 +319,9 @@ int main() {
 //    test5();
 //    test6();
 //    test7();
-    test8();
+//    test8();
+//    test9();
+//    test10();
+    test11();
     return 0;
 }
