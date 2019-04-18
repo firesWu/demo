@@ -167,7 +167,7 @@ void test4(){
 
 // test section3 bitset
 void test5(){
-
+    cout<< "===== test 05 =====" <<endl;
     // 内部存储使用 size_t 类型
     bitset<100> bs(4);
     bitset<300> bs2("100");
@@ -209,7 +209,7 @@ public:
 };
 
 void test6(){
-
+    cout<< "===== test 06 =====" <<endl;
     // dynamic_cast
     cout<<"dynamic_cast"<<endl;
     {
@@ -253,7 +253,7 @@ shared_ptr<demo> getTempPtr(){
 }
 
 void test7(){
-
+    cout<< "===== test 07 =====" <<endl;
 //    {
 //        auto& i = getTemp();
 //        cout<<i.value<<endl;
@@ -266,6 +266,96 @@ void test7(){
 
 }
 
+// 智能指针测试
+
+class B;
+class A {
+public:
+    B* b;
+    shared_ptr<B> b2;
+    weak_ptr<B> b3;
+
+    A(){}
+    A(B* _b):b(_b){}
+
+    void setB(B* _b){
+        b = _b;
+    }
+
+    void setB2(shared_ptr<B>& _b){
+        b2 = _b;
+    }
+
+    void setB3(const weak_ptr<B>& _b){
+        b3 = _b;
+    }
+
+    ~A(){
+        cout<<"A destory"<<endl;
+    }
+};
+
+class B {
+public:
+    A* a;
+    shared_ptr<A> a2;
+    weak_ptr<A> a3;
+
+    B(){}
+    B(A* _a):a(_a){}
+
+    void setA(A* _a){
+        a = _a;
+    }
+
+    void setA2(shared_ptr<A>& _a){
+        a2 = _a;
+    }
+
+    void setA3(const weak_ptr<A>& _a){
+        a3 = _a;
+    }
+
+    ~B(){
+        cout<<"B destory"<<endl;
+    }
+};
+
+void test8(){
+    cout<< "===== test 08 =====" <<endl;
+    // 直接销毁，不会管对象之间是否还有引用
+    {
+        cout<< "正常写法" <<endl;
+        A a = A();
+        B b =B();
+        a.setB(&b);
+        b.setA(&a);
+    }
+
+    // 无法销毁，对象之间存在循环引用
+    {
+        cout << "循环引用写法" << endl;
+        shared_ptr<A> a2 = make_shared<A>();
+        shared_ptr<B> b2 = make_shared<B>();
+        a2->setB2(b2);
+        b2->setA2(a2);
+        cout<<a2.use_count()<<endl;
+        cout<<b2.use_count()<<endl;
+    }
+
+    // 正常销毁对象
+    {
+        cout << "弱指针写法" << endl;
+        shared_ptr<A> a2 = make_shared<A>();
+        shared_ptr<B> b2 = make_shared<B>();
+        a2->setB3(b2);
+        b2->setA3(a2);
+        cout<<a2.use_count()<<endl;
+        cout<<b2.use_count()<<endl;
+    }
+
+}
+
 int main() {
 
 //    test1();
@@ -274,6 +364,7 @@ int main() {
 //    test4();
 //    test5();
 //    test6();
-    test7();
+//    test7();
+    test8();
     return 0;
 }
