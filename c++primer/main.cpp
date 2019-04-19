@@ -121,7 +121,7 @@ void test4(){
 }
 
 
-// test section3 bitset
+// test c++primer bitset
 void test5(){
     cout<< "===== test 05 =====" <<endl;
     // 内部存储使用 size_t 类型
