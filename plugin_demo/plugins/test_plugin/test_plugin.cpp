@@ -7,7 +7,7 @@ namespace plugin{
     using namespace std;
     using namespace appbase;
 
-    const static abstract_plugin& _test_plugin = app().register_plugin<test_plugin>();
+    static abstract_plugin& _test_plugin = app().register_plugin<test_plugin>();
 
     test_plugin::test_plugin() {}
 
