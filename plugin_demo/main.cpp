@@ -7,12 +7,13 @@ using namespace appbase;
 using namespace std;
 
 int main() {
-
+    // 这里插件的配置就直接通过 plugins 数组来配置， 就不使用配置文件了
     vector<string> plugins = {"plugin::test_plugin"};
+    // 初始化插件
     app().initialize<default_plugin>(plugins);
+    // 启动容器
     app().startup();
+    // 关闭容器
     app().shutdown();
-
-    std::cout << "Hello, World!" << std::endl;
     return 0;
 }

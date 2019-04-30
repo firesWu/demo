@@ -21,10 +21,12 @@ namespace appbase {
                 std::vector<abstract_plugin*> default_start_plugin = {find_plugin<Plugin>()...};
 
                 try{
+                    // 初始化默认插件
                     for(auto plugin : default_start_plugin){
                         plugin->initialize();
                     }
 
+                    // 初始化动态配置的插件
                     for(auto plugin_name : plugins_name){
                         get_plugin(plugin_name).initialize();
                     }
@@ -51,6 +53,7 @@ namespace appbase {
             // 注册插件，实例化，以便通过名字便能找到该实例。
             template<typename Plugin>
             auto& register_plugin(){
+                // 判断插件是否实例化过， 若有直接返回对象引用
                 auto existing = find_plugin<Plugin>();
                 if ( existing ){
                     return *existing;

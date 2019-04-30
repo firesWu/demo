@@ -62,6 +62,7 @@ std::map<std::string, std::unique_ptr<abstract_plugin>> plugins; // 类名与插
 // 注册插件，实例化，以便通过名字便能找到该实例。
 template<typename Plugin>
 auto& register_plugin(){
+    // 判断插件是否实例化过， 若有直接返回对象引用
     auto existing = find_plugin<Plugin>();
     if ( existing ){
         return *existing;
@@ -75,6 +76,7 @@ auto& register_plugin(){
 }
 
 test_plugin.cpp test_plugin
+// 定义静态全局变量， 保证在最开始便执行该初始化式
 static abstract_plugin& _test_plugin = app().register_plugin<test_plugin>();
 ```
 通过 register_plugin 去实例化插件，同时将该对象指针存储下来。对同个插件的多次注册只实例化一次。
@@ -82,16 +84,31 @@ static abstract_plugin& _test_plugin = app().register_plugin<test_plugin>();
 
 #### 插件的初始化
 ```
+main.cpp
+int main() {
+    // 这里插件的配置就直接通过 plugins 数组来配置， 就不使用配置文件了
+    vector<string> plugins = {"plugin::test_plugin"};
+    // 初始化插件
+    app().initialize<default_plugin>(plugins);
+    // 启动容器
+    app().startup();
+    // 关闭容器
+    app().shutdown();
+    return 0;
+}
+
 application.hpp application
 template<typename... Plugin>
 bool initialize(vector<string> plugins_name){
     std::vector<abstract_plugin*> default_start_plugin = {find_plugin<Plugin>()...};
 
     try{
+        // 初始化默认插件
         for(auto plugin : default_start_plugin){
             plugin->initialize();
         }
 
+        // 初始化动态配置的插件
         for(auto plugin_name : plugins_name){
             get_plugin(plugin_name).initialize();
         }
@@ -184,6 +201,6 @@ virtual void shutdown() override {
 插件框架的实现并不复杂， 主要运用的设计模式为工厂模式与单例模式。
 
 熟悉 BTS 插件框架的人可以看到，EOS 和 BTS 的插件化结构其实差不多。如果把 application 类建造成一个单例模式，也可以将第四步去掉。
-但静态变量是程序定义经过其定义式的时候才会初始化，所以在 CMakeLists.txt 添加插件依赖的时候需要加入 whole_archive_flag( 在程序启动时就链接进其变量及函数 )。
+但静态变量是程序定义经过其定义式的时候才会初始化，所以在 CMakeLists.txt 添加插件依赖的时候需要加入 whole_archive_flag( 在程序启动时就链接进其变量及函数，具体原理自行百度哈 )，例如本框架， 如果不加入该配置，动态加载的插件都会报 unable find plugin (跟静态变量的生命周期有关)。
 
 OK， EOS 的插件框架就讲完了，具体代码可以查看: https://github.com/firesWu/demo/tree/master/plugin_demo
