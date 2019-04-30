@@ -22,15 +22,25 @@ public:
         cout<<"hi test3"<<endl;
     }
 
-    base(){}
-
-    base(base& b){
-        i = 15;
+    base(){
+        cout<< "default" <<endl;
     }
+
+    base(const base& b){
+        cout<<"copy"<<endl;
+    }
+
+    base& operator=(const base& b){
+        cout<<" = "<<endl;
+        return *this;
+    }
+
+    void test4();
 };
 
 class son : public base {
 public:
+    int i = 0;
     void test(){
         cout<< " i'm son"<<endl;
     }
@@ -42,6 +52,8 @@ public:
     void test2(){
         cout<< "hi" <<endl;
     }
+
+    son(){}
 
 };
 

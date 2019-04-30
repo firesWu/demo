@@ -1,0 +1,5 @@
+add_subdirectory(default_plugin)
+add_subdirectory(dependencies_plugin)
+add_subdirectory(test_plugin)
+
+set(CPACK_DEBIAN_PACKAGE_DEPENDS ${CPACK_DEBIAN_PACKAGE_DEPENDS} PARENT_SCOPE)

@@ -3,4 +3,4 @@ project(section3)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(section3 main.cpp demo.h HashPtrMem.h son.h smartptr.h)
+add_executable(section3 main.cpp demo.h HashPtrMem.h son.h smartptr.h friend.h class_test.h)

@@ -1,5 +1,7 @@
 #include <iostream>
 #include <vector>
+#include <typeindex>
+#include <list>
 #include <ctime>
 #include <type_traits>
 #include <bitset>
@@ -7,6 +9,8 @@
 #include "HashPtrMem.h"
 #include "smartptr.h"
 #include "son.h"
+#include "friend.h"
+#include "class_test.h"
 
 using namespace std;
 
@@ -35,6 +39,10 @@ void test1(){
     }
     end = clock();
     cout<< (end - start) << endl;
+
+    auto itr = list.begin();
+    itr +=99;
+    cout<< (itr==list.end())<<endl;
 
     return ;
 }
@@ -291,7 +299,7 @@ void getBaseRefer2(base b){
 }
 
 void test10(){
-    cout<< "===== test 09 =====" <<endl;
+    cout<< "===== test 10 =====" <<endl;
     son s;
     s.setI();
     overload(s);
@@ -300,15 +308,190 @@ void test10(){
     getBaseRefer2(s);
 }
 
-void test11(){
-    vector<int> list;
-
-    for(int i=0;i<100;i++) list.emplace_back(i);
-
-    vector<int>::iterator itr = list.begin() + 10;
-    itr += 30;
-    cout<<*itr<<endl;
+void testoverload(int i){
+    cout<<i<<endl;
 }
+//
+//void testoverload(float i){
+//    cout<<"float"<<i<<endl;
+//}
+
+void testoverload(double i, double j = 0){
+    cout<<i<<" "<<j<<endl;
+}
+
+void testoverload2(int i, int j){
+    cout<<i<<" "<<j<<endl;
+}
+
+void testoverload2(double i, double j){
+    cout<<i<<" "<<j<<endl;
+}
+
+
+void test11(){
+    cout<< "===== test 11 =====" <<endl;
+    testoverload(5.6);
+
+    // 2 个可行函数的匹配度一样， 则会报 ambiguous 错误
+//    testoverload2(42, 5.9);
+}
+
+typedef bool  (*pointFunc)(string& str, string& str2);
+
+bool cmp(string& str1, string& str2){
+    cout<<"hi" << str1 <<" "<< str2 <<endl;
+    return true;
+}
+
+bool cmp2(string& str1, string& str2){
+    cout<<"hello" << str1 <<" "<< str2 <<endl;
+    return false;
+}
+
+void receiveFun( pointFunc func){
+    string str1 = "what", str2="hehe";
+    (*func)(str1,str2);
+}
+
+void test12(){
+    cout<< "===== test 12 =====" <<endl;
+    pointFunc fun1;
+    fun1 = &cmp;
+    string str1 = "world", str2="dage";
+    cout<<((*fun1)(str1,str2))<<endl;
+    fun1 = &cmp2;
+    cout<<((*fun1)(str1,str2))<<endl;
+
+    receiveFun(cmp2);
+}
+
+void test13(){
+    if(cin) cout<<"cin is right"<<endl;
+    int i;
+    cout<<cin.fail()<<endl;
+    cout<< hex << cin.rdstate() <<endl;
+    while(cin>>i, !cin.eof()) {
+        if(cin.bad()){
+            throw runtime_error("hi");
+        }
+
+        if(cin.fail()){
+            cerr<<"bad data"<<endl;
+            cout<< hex <<istream::failbit<<endl;
+            cout<< hex << cin.rdstate() <<endl;
+            std::cin.clear();
+//            std::cin.clear(~std::istream::failbit & std::cin.rdstate());
+            cout<< hex << cin.rdstate() <<endl;
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+            continue;
+        }
+    }
+}
+
+void test14(){
+
+    vector<double> vec;
+    vec.emplace_back(1.2);
+    vec.emplace_back(2.2);
+
+    list<int> lis(vec.begin(), vec.end());
+
+    for(auto itr = lis.begin(); itr != lis.end();itr++){
+        cout<<(*itr)<<endl;
+    }
+    vector<son> vec2;
+    son s = son();
+    vec2.push_back(s);
+
+    vector<son> vec3(vec2);
+    list<son> lis2(vec2.begin(), vec2.end());
+    lis2.begin()->test();
+}
+
+void test15(){
+    demo2 d = demo2();
+//    demo2 b = d;
+}
+
+void test16(){
+    double * str;
+    int t;
+    cout<<typeid(str).name()<<endl;
+    cout<<typeid(t).name()<<endl;
+}
+
+void test17(){
+    demo::ss str("ab");
+    cout<<str<<endl;
+
+
+    int a = 1,b = 2;
+    demo c;
+    cout<<c.add(a,b)<<endl;
+    const demo d;
+    cout<<d.add(a,b)<<endl;
+}
+
+void test18(){
+    friend_demo1 f1;
+    friend_demo2 f2;
+    f2.getI2(f1);
+
+}
+
+int teststatic(){
+
+    static int count = 0;
+    return count++;
+
+}
+
+void test19(){
+    for( int i = 0; i < 10; i++){
+        cout<<teststatic()<<endl;
+    }
+    demo d;
+    d.add(1,2);
+    d.add(2,3);
+    cout<<global_count<<endl;
+
+    cout<<demo::hi()<<endl;
+
+}
+
+void test20(){
+    base b = base();
+    base b2 = b;
+    b2 = b;
+
+    int *i = new int(5);
+    delete i;
+    cout<<(*i)<<endl;
+
+    demo3 de;
+    {
+        demo3 de2;
+        de = de2;
+        cout<<(de2.i)<<endl;
+        delete de2.i;
+    }
+    cout<<(de.i)<<endl;
+
+}
+
+void test21(){
+    demo4 d(2),d2(5);
+    demo4 d3 = d + d2;
+    cout<<d.i<<endl;
+}
+
+
+void test22(){
+    abstract_plugin* tp = new plugin<test_plugin>();
+    tp->get_name();
+}
+
 
 int main() {
 
@@ -322,6 +505,17 @@ int main() {
 //    test8();
 //    test9();
 //    test10();
-    test11();
+//    test11();
+//    test12();
+//    test13();
+//    test14();
+//    test15();
+//    test16();
+//    test17();
+//    test18();
+//    test19();
+//    test20();
+//    test21();
+    test22();
     return 0;
 }
