@@ -11,6 +11,7 @@
 #include "son.h"
 #include "friend.h"
 #include "class_test.h"
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
 
@@ -487,10 +488,10 @@ void test21(){
 }
 
 
-void test22(){
-    abstract_plugin* tp = new plugin<test_plugin>();
-    tp->get_name();
-}
+//void test22(){
+//    abstract_plugin* tp = new plugin<test_plugin>();
+//    tp->get_name();
+//}
 
 
 int main() {
@@ -516,6 +517,7 @@ int main() {
 //    test19();
 //    test20();
 //    test21();
-    test22();
+//    test22();
+    boost::lexical_cast<int>("111");
     return 0;
 }
