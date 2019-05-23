@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.13)
-project(plugin_demo)
+project(eos_demo)
 
 set(CMAKE_CXX_STANDARD 14)
 
@@ -7,7 +7,7 @@ add_subdirectory(libraries)
 add_subdirectory(plugins)
 
 
-add_executable(plugin_demo main.cpp)
+add_executable(eos_demo main.cpp)
 
 if(UNIX)
     if(APPLE)
@@ -25,7 +25,9 @@ else()
     set(build_id_flag "")
 endif()
 
-target_link_libraries( plugin_demo
+target_link_libraries( eos_demo
         PRIVATE -Wl,${whole_archive_flag} default_plugin -Wl,${no_whole_archive_flag}
         PRIVATE -Wl,${whole_archive_flag} dependencies_plugin -Wl,${no_whole_archive_flag}
-        PRIVATE -Wl,${whole_archive_flag} test_plugin -Wl,${no_whole_archive_flag})
+        PRIVATE -Wl,${whole_archive_flag} test_plugin -Wl,${no_whole_archive_flag}
+        boost_system
+        )

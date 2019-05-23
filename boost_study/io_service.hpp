@@ -65,27 +65,31 @@ int ios_service_test()
             new boost::asio::io_service::work( *io_service )
     );
 
-    global_stream_lock.lock();
-    std::cout << "[" << boost::this_thread::get_id()
-              << "] The program will exit when all work has finished."
-              << std::endl;
-    global_stream_lock.unlock();
-
-    boost::thread_group worker_threads;
-    for( int x = 0; x < 1; ++x )
-    {
-        worker_threads.create_thread(
-                boost::bind( &WorkerThread, io_service )
-        );
-    }
-
     io_service->post( boost::bind( CalculateFib, 3 ) );
     io_service->post( boost::bind( CalculateFib, 4 ) );
     io_service->post( boost::bind( CalculateFib, 5 ) );
 
-    work.reset();
 
-    worker_threads.join_all();
+    io_service->run();
+//    global_stream_lock.lock();
+//    std::cout << "[" << boost::this_thread::get_id()
+//              << "] The program will exit when all work has finished."
+//              << std::endl;
+//    global_stream_lock.unlock();
+//
+//    boost::thread_group worker_threads;
+//    for( int x = 0; x < 1; ++x )
+//    {
+//        worker_threads.create_thread(
+//                boost::bind( &WorkerThread, io_service )
+//        );
+//    }
+//
+//
+//
+//    work.reset();
+//
+//    worker_threads.join_all();
     std::cout<<"end"<<std::endl;
     return 0;
 }

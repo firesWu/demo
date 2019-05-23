@@ -6,6 +6,7 @@
 #define PLUGIN_DEMO_APPLICATION_HPP
 
 #include <plugin.hpp>
+#include <boost/asio.hpp>
 #include <map>
 #include <vector>
 
@@ -15,6 +16,7 @@ namespace appbase {
 
     class application {
         public:
+            ~application();
 
             template<typename... Plugin>
             bool initialize(vector<string> plugins_name){
@@ -80,15 +82,25 @@ namespace appbase {
                 return *ptr;
             }
 
+            boost::asio::io_service& get_io_service() { return *io_serv; }
+
+            void wait_for_signal(std::shared_ptr<boost::asio::signal_set> ss);
+            void setup_signal_handling_on_ios(boost::asio::io_service& ios);
+
         protected:
             void plugin_initialized(abstract_plugin& plug){ initialized_plugins.push_back(&plug); }
             void plugin_started(abstract_plugin& plug){ running_plugins.push_back(&plug); }
 
         private:
+            application();
+
             bool _is_quiting = false; // 是否退出
             std::vector<abstract_plugin*> initialized_plugins; // 经过初始化的插件
             std::vector<abstract_plugin*> running_plugins; // 成功运行的插件
             std::map<std::string, std::unique_ptr<abstract_plugin>> plugins; // 类名与插件对象指针的映射
+
+
+            std::shared_ptr<boost::asio::io_service> io_serv;
 
         // plugin 需要操作私有变量
         template<typename Impl>

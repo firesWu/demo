@@ -41,7 +41,7 @@ EOS 添加插件流程
 
 OK， 根据这些需求画出类图
 
-<p><img src="./class_diagram.jpg" /></p>
+<p><img src="../class_diagram.jpg" /></p>
 
 既然需要统一管理生命周期，那么就需要所有插件有相同的生命周期， 如此便定义 abstract_plugin 作为所有插件的基类，在该基类定义生命周期函数( initialize、startup、shutdown )。  
 所有的插件应该只需被实例化一次， 所以都应该是单例模式。 但是多个插件多个单例，这样去实例化的话的会让代码很难解耦，采用单例模板类的方式，用 plugin<Impl> ( Impl 为插件类  )，统一通过 plugin 类来实例化插件对象。如此对于 application 来说，它只需要知道 plugin 这个类就行，其他类对它是透明的。  

@@ -28,7 +28,7 @@ void threadCaller()
 int thread_test()
 {
     threadCaller();
-    std::this_thread::sleep_for(std::chrono::seconds(5));
+//    std::this_thread::sleep_for(std::chrono::seconds(5));
     std::cout << "back to main.\n";
 }
 
