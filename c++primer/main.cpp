@@ -167,6 +167,8 @@ void test6(){
         s->test2();
 
         auto b = dynamic_cast<base*>(s);
+        cout<<" class type :"<< typeid(son).name() <<endl;
+        cout<<" class type :"<< typeid(*b).name() <<endl;
         b->test();
         auto b2 = s;
         b2->test();
@@ -510,6 +512,17 @@ void test23(){
     delete ptr;
 }
 
+void test24(){
+
+    base* b;
+    son s;
+    base b2;
+    b = &s;
+    cout<<" class type :"<< typeid(son).name() <<endl;
+    cout<<" class type :"<< typeid(*b).name() <<endl;
+    cout<< (typeid(son).name() == typeid(b).name()) <<endl;
+}
+
 int main() {
 
 //    test1();
@@ -517,7 +530,7 @@ int main() {
 //    test3();
 //    test4();
 //    test5();
-//    test6();
+    test6();
 //    test7();
 //    test8();
 //    test9();
@@ -535,6 +548,7 @@ int main() {
 //    test21();
 //    test22();
 //    boost::lexical_cast<int>("111");
-    test23();
+//    test23();
+//    test24();
     return 0;
 }
