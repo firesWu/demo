@@ -11,7 +11,8 @@
 #include "son.h"
 #include "friend.h"
 #include "class_test.h"
-#include <boost/lexical_cast.hpp>
+#include "memorytest.hpp"
+//#include <boost/lexical_cast.hpp>
 
 using namespace std;
 
@@ -156,6 +157,7 @@ void test5(){
 // test section5 cast
 void test6(){
     cout<< "===== test 06 =====" <<endl;
+
     // dynamic_cast
     cout<<"dynamic_cast"<<endl;
     {
@@ -179,6 +181,16 @@ void test6(){
 //        s->test();
 //        s->test2();
     }
+    {
+        cout<<"上行转换后再进行下行转换"<<endl;
+        son * s = new son();
+        s->test();
+        base* b = s;
+        b->test();
+        auto s2 = dynamic_cast<son*>(b);
+        s2->test();
+    }
+
     cout<<"reinterpret_cast"<<endl;
     {
         int * ptr = new int(97);
@@ -493,6 +505,10 @@ void test21(){
 //    tp->get_name();
 //}
 
+void test23(){
+    auto ptr = new memorytest();
+    delete ptr;
+}
 
 int main() {
 
@@ -518,6 +534,7 @@ int main() {
 //    test20();
 //    test21();
 //    test22();
-    boost::lexical_cast<int>("111");
+//    boost::lexical_cast<int>("111");
+    test23();
     return 0;
 }

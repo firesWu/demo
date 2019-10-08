@@ -5,6 +5,7 @@
 #ifndef SECTION3_DEMO_H
 #define SECTION3_DEMO_H
 #include <iostream>
+#include <vector>
 using namespace std;
 
 
@@ -120,6 +121,15 @@ public:
         cout<<"+"<<endl;
         i+= b.i;
         return *this;
+    }
+
+};
+
+class demo5 {
+public:
+    int i;
+    demo5(int _i) {
+        i = _i;
     }
 
 };
